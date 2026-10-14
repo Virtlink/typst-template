@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-global-schema.json",
+  "extends": ["github>virtlink/renovate-config"],
+  "onboarding": false,
+  "requireConfig": "ignored",
+  "enabledManagers": ["github-actions", "gitlabci", "mise", "nix"],
+  "nix": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["at any time"]
+  },
+  "allowedUnsafeExecutions": ["mise"]
+}

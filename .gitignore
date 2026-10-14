@@ -1,0 +1,5 @@
+# Typst
+dist/
+
+# Direnv
+.direnv/

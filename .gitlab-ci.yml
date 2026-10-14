@@ -1,0 +1,49 @@
+stages:
+  - build
+  - maintenance
+build-pdf:
+  stage: build
+  image: debian:bookworm-slim
+
+  before_script:
+    - apt-get update
+    - apt-get install -y curl ca-certificates
+    - curl -fsSL https://mise.run | sh
+    - export PATH="$HOME/.local/bin:$PATH"
+    - mise install
+
+  script:
+    - mise run build
+
+  artifacts:
+    name: "$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG-pdf"
+    paths:
+      - dist/main.pdf
+
+# GitLab setup:
+# - Add a masked RENOVATE_TOKEN with `api` scope. Its owner must be allowed to merge
+#   into the protected default branch.
+# - A masked, read-only RENOVATE_GITHUB_COM_TOKEN is recommended for GitHub-hosted
+#   presets and changelogs.
+# - Create a Saturday 06:00 UTC pipeline schedule on the default branch with
+#   RENOVATE=true.
+renovate:
+  stage: maintenance
+  image: ghcr.io/renovatebot/renovate:44
+
+  variables:
+    LOG_LEVEL: info
+    RENOVATE_CONFIG_FILE: renovate-config.json
+    RENOVATE_PLATFORM: gitlab
+    RENOVATE_ENDPOINT: $CI_API_V4_URL
+    RENOVATE_REPOSITORIES: $CI_PROJECT_PATH
+
+  script:
+    - renovate --config-file "$RENOVATE_CONFIG_FILE"
+
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $RENOVATE == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: manual
+      allow_failure: true
+    - when: never

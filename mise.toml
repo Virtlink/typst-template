@@ -1,0 +1,14 @@
+[tools]
+"aqua:typst/typst" = "0.15.1"
+
+[tasks.build]
+description = "Compile the Typst document"
+run = "mkdir -p dist && typst compile src/main.typ dist/main.pdf"
+run_windows = ["if not exist dist mkdir dist", "typst compile src/main.typ dist/main.pdf"]
+sources = ["src/**/*"]
+outputs = ["dist/main.pdf"]
+
+[tasks.watch]
+description = "Continuously compile the Typst document"
+run = "mkdir -p dist && typst watch src/main.typ dist/main.pdf"
+run_windows = ["if not exist dist mkdir dist", "typst watch src/main.typ dist/main.pdf"]
